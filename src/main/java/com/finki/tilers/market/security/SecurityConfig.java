@@ -10,6 +10,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -21,6 +26,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthenticationProvider customAuthenticationProvider;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -38,7 +46,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        InMemoryUserDetailsManager userDetailsService = new InMemoryUserDetailsManager();
+
+        UserDetails user = User.builder()
+                .username("user")
+                .password(passwordEncoder.encode("password"))
+                .roles("USER")
+                .build();
+
+        UserDetails admin = User.builder()
+                .username("admin")
+                .password(passwordEncoder.encode("adminpass"))
+                .roles("USER", "MODERATOR", "ADMIN")
+                .build();
+
+        UserDetails moderator = User.builder()
+                .username("mod")
+                .password(passwordEncoder.encode("modpass"))
+                .roles("USER", "MODERATOR")
+                .build();
+        userDetailsService.createUser(user);
+        userDetailsService.createUser(admin);
+        userDetailsService.createUser(moderator);
+
+        auth.userDetailsService(userDetailsService);
+
+
         auth.authenticationProvider(customAuthenticationProvider);
+
+
+
     }
 
     @Bean
@@ -57,4 +94,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
 }
