@@ -10,6 +10,7 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
+    // TODO extract on properties
     private final String jwtSecret = "yourSecretKey";
     private final int jwtExpirationMs = 86400000;  // 1 day
 

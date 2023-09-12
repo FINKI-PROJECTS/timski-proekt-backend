@@ -31,7 +31,6 @@ public class ApplicationUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -52,6 +51,8 @@ public class ApplicationUser {
     }
 
     private String phoneNumber;
+    @JsonIgnore
+    private String password;
 
     /**
      * Email must be unique or SQLServerException will be thrown

@@ -10,6 +10,7 @@ import org.hibernate.engine.config.spi.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -22,6 +23,9 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * Initializes the application by creating an admin user if it doesn't exist.
@@ -167,25 +171,44 @@ public class UserService {
      * @param user       The RegisterUserDto object containing the user information.
      * @return The created and saved ApplicationUser object.
      */
-    public ApplicationUser createOrUpdateUser(RegisterDtoUser user) {
-        if(user.getRole() == null || user.getRole().isEmpty()) {
-            Role role = roleService.getByNameOrNull("USER");
-            user.setRole(role == null ? null : List.of(role));
+    public ApplicationUser createOrUpdateUser(RegisterDtoUser user, Boolean isRegister) {
+
+        if (isRegister && user.getId() == null) {
+            throw new CustomBadRequestException("To update the user you must provide an id on the body.");
+        }
+        if(isRegister) {
+            ApplicationUser us = getByEmailOrNull(user.getEmail());
+            if(us != null) {
+                throw new CustomBadRequestException("User already exists!");
+            }
         }
 
-        ApplicationUser userToCreate = null;
+        ApplicationUser userToCreate;
         if (user.getId() != null) {
             userToCreate = getUserById(user.getId());
         } else {
             userToCreate = new ApplicationUser();
         }
-        userToCreate.setRole(user.getRole());
         userToCreate.setEmail(user.getEmail());
         userToCreate.setFirstName(user.getFirstName());
         userToCreate.setLastName(user.getLastName());
         userToCreate.setPhoneNumber(user.getPhoneNumber());
+        userToCreate.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if(isRegister) {
+            Role role = roleService.getByNameOrNull("USER");
+            userToCreate.setRole(List.of(role));
+        }
 
         return userRepository.save(userToCreate);
+    }
+
+    public ApplicationUser checkIfUserPasswordMatches(String email, String rawPassword) {
+        ApplicationUser user = userRepository.getApplicationUserByEmail(email).orElse(null);  // Assuming findByEmail method exists in your repository
+        if (user != null && passwordEncoder.matches(rawPassword, user.getPassword())) {
+            return user;
+        }
+        return null;
     }
 
 }

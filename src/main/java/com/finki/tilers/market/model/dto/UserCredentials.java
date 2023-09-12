@@ -13,8 +13,8 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public
 class UserCredentials {
-    @NotNull(message = "Username must be provided")
-    private String username;
+    @NotNull(message = "Email must be provided")
+    private String email;
     @NotNull(message = "Password must be provided")
     private String password;
 
