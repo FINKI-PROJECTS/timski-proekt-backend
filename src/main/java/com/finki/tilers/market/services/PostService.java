@@ -2,12 +2,14 @@ package com.finki.tilers.market.services;
 
 import com.finki.tilers.market.exception.CustomBadRequestException;
 import com.finki.tilers.market.exception.UnauthorizedAccessException;
+import com.finki.tilers.market.model.dto.PostSummaryDto;
 import com.finki.tilers.market.model.entity.Post;
 import com.finki.tilers.market.repositories.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -18,12 +20,12 @@ public class PostService {
     @Autowired
     private UserService userService;
 
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
+    public List<PostSummaryDto> getAllPosts() {
+        return postRepository.findAll().stream().map(Post::mapToPostSummaryDto).collect(Collectors.toList());
     }
 
-    public List<Post> getPostsByUserId(Long userId) {
-        return postRepository.findAllByCreatedUser_Id(userId);
+    public List<PostSummaryDto> getPostsByUserId(Long userId) {
+        return postRepository.findAllByCreatedUser_Id(userId).stream().map(Post::mapToPostSummaryDto).collect(Collectors.toList());
     }
 
     public Post createOrUpdatePost(Post post) {

@@ -1,5 +1,6 @@
 package com.finki.tilers.market.model.entity;
 
+import com.finki.tilers.market.model.dto.PostSummaryDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,4 +42,18 @@ public class Post {
     @JoinColumn(name = "created_user_id")
     private ApplicationUser createdUser;
 
+
+    public PostSummaryDto mapToPostSummaryDto() {
+        PostSummaryDto dto = new PostSummaryDto();
+        dto.setPostId(this.getId());
+        dto.setName(this.getName());
+        dto.setPrice(this.getPrice());
+        dto.setThumbnail(this.getThumbnail());
+        dto.setDescription(this.getDescription());
+        dto.setCategory(this.getCategory());
+
+        dto.setCreatedUser(this.getCreatedUser().mapToSummaryDto());
+
+        return dto;
+    }
 }

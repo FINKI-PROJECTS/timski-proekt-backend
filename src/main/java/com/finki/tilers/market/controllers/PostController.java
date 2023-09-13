@@ -1,5 +1,6 @@
 package com.finki.tilers.market.controllers;
 
+import com.finki.tilers.market.model.dto.PostSummaryDto;
 import com.finki.tilers.market.model.entity.Post;
 import com.finki.tilers.market.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +23,13 @@ public class PostController {
      * @return list of all Posts.
      */
     @GetMapping("/")
-    public ResponseEntity<List<Post>> getAllPosts() {
+    public ResponseEntity<List<PostSummaryDto>> getAllPosts() {
         try {
-            List<Post> Posts = postService.getAllPosts();
-            if (Posts.isEmpty()) {
+            List<PostSummaryDto> posts = postService.getAllPosts();
+            if (posts.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(Posts, HttpStatus.OK);
+            return new ResponseEntity<>(posts, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -41,12 +42,12 @@ public class PostController {
      * @return list of Posts by the user.
      */
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Post>> getPostsByUserId(@PathVariable Long userId) {
-        List<Post> Posts = postService.getPostsByUserId(userId);
-        if (Posts.isEmpty()) {
+    public ResponseEntity<List<PostSummaryDto>> getPostsByUserId(@PathVariable Long userId) {
+        List<PostSummaryDto> posts = postService.getPostsByUserId(userId);
+        if (posts.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(Posts, HttpStatus.OK);
+        return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     /**

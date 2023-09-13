@@ -1,6 +1,7 @@
 package com.finki.tilers.market.model.entity;
 
 
+import com.finki.tilers.market.model.dto.UserSummaryDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -81,6 +82,13 @@ public class ApplicationUser {
 
     public boolean isUserEqual(ApplicationUser user) {
         return this.getEmail().equals(user.getEmail()) && this.getId().equals(user.getId());
+    }
+
+    public UserSummaryDto mapToSummaryDto() {
+        UserSummaryDto dto = new UserSummaryDto();
+        dto.setId(this.getId());
+        dto.setFullName(this.getFullName());
+        return dto;
     }
 
 }
