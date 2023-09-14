@@ -1,6 +1,7 @@
 package com.finki.tilers.market.controllers;
 
 import com.finki.tilers.market.model.dto.PostSummaryDto;
+import com.finki.tilers.market.model.dto.SingleUserPostDto;
 import com.finki.tilers.market.model.entity.Post;
 import com.finki.tilers.market.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +43,9 @@ public class PostController {
      * @return list of Posts by the user.
      */
     @GetMapping("/{userId}")
-    public ResponseEntity<List<PostSummaryDto>> getPostsByUserId(@PathVariable Long userId) {
-        List<PostSummaryDto> posts = postService.getPostsByUserId(userId);
-        if (posts.isEmpty()) {
+    public ResponseEntity<SingleUserPostDto> getPostsByUserId(@PathVariable Long userId) {
+        SingleUserPostDto posts = postService.getPostsByUserId(userId);
+        if (posts.getPosts().isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(posts, HttpStatus.OK);
