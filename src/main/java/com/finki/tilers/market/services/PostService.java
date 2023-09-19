@@ -32,6 +32,11 @@ public class PostService {
         return userPostDto;
     }
 
+
+    public PostSummaryDto getPostById(Long postId) {
+        return postRepository.findById(postId).orElseThrow(() -> new CustomBadRequestException("Product with id: " + postId + "doesn't exist!")).mapToPostSummaryDto();
+    }
+
     public Post createOrUpdatePost(Post post) {
         Post originalPost;
         if (post.getId() != null) {

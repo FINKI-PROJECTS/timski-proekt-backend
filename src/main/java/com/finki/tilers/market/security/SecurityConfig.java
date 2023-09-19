@@ -44,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth/**").permitAll()  // Exclude auth/* from authentication
                 .antMatchers(HttpMethod.GET, "/posts/").permitAll() // Allow all for GET requests to /posts/
                 .antMatchers(HttpMethod.GET, "/posts/*").permitAll() // Allow all for GET requests to /posts/{userId}
+                .antMatchers(HttpMethod.GET, "/posts/getById/*").permitAll() // Allow all for GET requests to /posts/{userId}
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
