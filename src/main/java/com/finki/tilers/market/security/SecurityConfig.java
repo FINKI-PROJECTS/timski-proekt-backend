@@ -36,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()  // assuming you want CSRF disabled
                 .authorizeRequests()
-                .antMatchers("/auth/**").permitAll()  // Exclude auth/* from authentication
+                .antMatchers("/auth/**", "/payment/**").permitAll()  // Exclude auth/* from authentication
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
