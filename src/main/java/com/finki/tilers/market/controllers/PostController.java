@@ -1,6 +1,7 @@
 package com.finki.tilers.market.controllers;
 
 import com.finki.tilers.market.model.dto.PostSummaryDto;
+import com.finki.tilers.market.model.dto.SingleUserPostDto;
 import com.finki.tilers.market.model.entity.Post;
 import com.finki.tilers.market.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class PostController {
         try {
             List<PostSummaryDto> posts = postService.getAllPosts();
             if (posts.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(List.of(), HttpStatus.OK);
             }
             return new ResponseEntity<>(posts, HttpStatus.OK);
         } catch (Exception e) {
@@ -42,11 +43,8 @@ public class PostController {
      * @return list of Posts by the user.
      */
     @GetMapping("/{userId}")
-    public ResponseEntity<List<PostSummaryDto>> getPostsByUserId(@PathVariable Long userId) {
-        List<PostSummaryDto> posts = postService.getPostsByUserId(userId);
-        if (posts.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+    public ResponseEntity<SingleUserPostDto> getPostsByUserId(@PathVariable Long userId) {
+        SingleUserPostDto posts = postService.getPostsByUserId(userId);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
@@ -60,5 +58,10 @@ public class PostController {
     public ResponseEntity<Post> createOrUpdatePost(@RequestBody Post post) {
         Post savedPost = postService.createOrUpdatePost(post);
         return new ResponseEntity<>(savedPost, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/getById/{postId}")
+    public ResponseEntity<PostSummaryDto> getPostById(@PathVariable Long postId) {
+        return new ResponseEntity<>(postService.getPostById(postId), HttpStatus.OK);
     }
 }

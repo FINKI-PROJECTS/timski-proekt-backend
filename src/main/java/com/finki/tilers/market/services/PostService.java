@@ -3,6 +3,7 @@ package com.finki.tilers.market.services;
 import com.finki.tilers.market.exception.CustomBadRequestException;
 import com.finki.tilers.market.exception.UnauthorizedAccessException;
 import com.finki.tilers.market.model.dto.PostSummaryDto;
+import com.finki.tilers.market.model.dto.SingleUserPostDto;
 import com.finki.tilers.market.model.entity.Post;
 import com.finki.tilers.market.repositories.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,16 @@ public class PostService {
         return postRepository.findAll().stream().map(Post::mapToPostSummaryDto).collect(Collectors.toList());
     }
 
-    public List<PostSummaryDto> getPostsByUserId(Long userId) {
-        return postRepository.findAllByCreatedUser_Id(userId).stream().map(Post::mapToPostSummaryDto).collect(Collectors.toList());
+    public SingleUserPostDto getPostsByUserId(Long userId) {
+        SingleUserPostDto userPostDto = new SingleUserPostDto();
+        userPostDto.setPosts(postRepository.findAllByCreatedUser_Id(userId).stream().map(Post::mapToPostSummaryDto).collect(Collectors.toList()));
+        userPostDto.setUser(userService.getUserById(userId).mapToSummaryDto());
+        return userPostDto;
+    }
+
+
+    public PostSummaryDto getPostById(Long postId) {
+        return postRepository.findById(postId).orElseThrow(() -> new CustomBadRequestException("Product with id: " + postId + "doesn't exist!")).mapToPostSummaryDto();
     }
 
     public Post createOrUpdatePost(Post post) {

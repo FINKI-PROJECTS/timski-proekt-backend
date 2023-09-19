@@ -3,6 +3,7 @@ package com.finki.tilers.market.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -20,6 +21,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -34,9 +38,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()  // assuming you want CSRF disabled
+                .cors().configurationSource(corsConfigurationSource())
+                .and().csrf().disable()  // assuming you want CSRF disabled
                 .authorizeRequests()
+
                 .antMatchers("/auth/**", "/payment/**").permitAll()  // Exclude auth/* from authentication
+                .antMatchers(HttpMethod.GET, "/posts/").permitAll() // Allow all for GET requests to /posts/
+                .antMatchers(HttpMethod.GET, "/posts/*").permitAll() // Allow all for GET requests to /posts/{userId}
+                .antMatchers(HttpMethod.GET, "/posts/getById/*").permitAll() // Allow all for GET requests to /posts/{userId}
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -75,17 +84,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(customAuthenticationProvider);
 
 
-
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration().applyPermitDefaultValues();
-        config.addAllowedOrigin("http://localhost:3000"); // or whatever your frontend address is
-        config.addAllowedMethod("*");
-        config.addAllowedHeader("*");
-        source.registerCorsConfiguration("/**", config);
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 

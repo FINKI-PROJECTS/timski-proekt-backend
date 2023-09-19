@@ -173,7 +173,7 @@ public class UserService {
      */
     public ApplicationUser createOrUpdateUser(RegisterDtoUser user, Boolean isRegister) {
 
-        if (isRegister && user.getId() == null) {
+        if (!isRegister && user.getId() == null) {
             throw new CustomBadRequestException("To update the user you must provide an id on the body.");
         }
         if(isRegister) {
