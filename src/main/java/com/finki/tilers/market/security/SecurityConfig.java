@@ -41,7 +41,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().configurationSource(corsConfigurationSource())
                 .and().csrf().disable()  // assuming you want CSRF disabled
                 .authorizeRequests()
-                .antMatchers("/auth/**").permitAll()  // Exclude auth/* from authentication
+
+                .antMatchers("/auth/**", "/payment/**").permitAll()  // Exclude auth/* from authentication
                 .antMatchers(HttpMethod.GET, "/posts/").permitAll() // Allow all for GET requests to /posts/
                 .antMatchers(HttpMethod.GET, "/posts/*").permitAll() // Allow all for GET requests to /posts/{userId}
                 .antMatchers(HttpMethod.GET, "/posts/getById/*").permitAll() // Allow all for GET requests to /posts/{userId}
