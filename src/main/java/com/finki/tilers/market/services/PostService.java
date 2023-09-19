@@ -61,4 +61,7 @@ public class PostService {
         return postRepository.save(originalPost);
     }
 
+    public List<PostSummaryDto> getLatest4() {
+        return postRepository.findTop4ByOrderByIdDesc().stream().map(Post::mapToPostSummaryDto).collect(Collectors.toList());
+    }
 }

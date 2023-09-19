@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/posts")
@@ -61,7 +63,10 @@ public class PostController {
     }
 
     @GetMapping("/getById/{postId}")
-    public ResponseEntity<PostSummaryDto> getPostById(@PathVariable Long postId) {
-        return new ResponseEntity<>(postService.getPostById(postId), HttpStatus.OK);
+    public ResponseEntity<Map<String, Object>> getPostById(@PathVariable Long postId) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("post", postService.getPostById(postId));
+        result.put("otherPosts", postService.getLatest4());
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

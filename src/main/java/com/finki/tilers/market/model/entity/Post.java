@@ -27,7 +27,8 @@ public class Post {
 
     private String price;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
+    @Lob
     private String thumbnail;
 
     @Lob
